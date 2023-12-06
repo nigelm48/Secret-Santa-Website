@@ -110,3 +110,15 @@ function handleSecretLinkClick(event) {
     // window.location.href = targetLink; // Uncomment this line to redirect to the link
 }
 
+// Event listener for the reset button
+document.getElementById("resetButton").addEventListener("click", resetHomePage);
+
+// Function to reset the page to a clean home page
+function resetHomePage() {
+    let nameInputsContainer = document.getElementById("nameInputs");
+    let recipientInfo = document.getElementById("recipientInfo");
+
+    // Clear both the nameInputsContainer and recipientInfo
+    nameInputsContainer.innerHTML = "";
+    recipientInfo.innerHTML = "";
+}
