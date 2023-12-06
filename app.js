@@ -25,14 +25,26 @@ function collectNames() {
     nameInputsContainer.appendChild(submitButton);
 }
 
-// Function to generate a unique link based on the player's name
-function generateUniqueLink(playerName) {
-    // Use some method to generate a unique identifier, such as a timestamp
-    let uniqueIdentifier = Date.now();
-    // Concatenate the player's name and the unique identifier to create a relative path
-    let relativePath = `${playerName.toLowerCase().replace(/\s/g, '-')}-${uniqueIdentifier}`;
-    return relativePath;
+// Include a UUID library, you can use a package like 'uuid' or generateUUID function
+// For simplicity, you can use a basic function as shown below
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }
+
+function generateUniqueLink(playerName, phoneNumber) {
+    // Generate a UUID as a unique identifier
+    let uniqueIdentifier = generateUUID();
+    // Concatenate the player's name, phone number, and the unique identifier to create a unique link
+    let relativePath = `${playerName.toLowerCase().replace(/\s/g, '-')}-${phoneNumber}-${uniqueIdentifier}`;
+    // Use the Netlify domain as the base URL
+    let netlifyDomain = 'https://gleeful-kulfi-bb3502.netlify.app/';
+    return `${netlifyDomain}${relativePath}`;
+}
+
 
 function submitNames() {
     let nameInputs = document.querySelectorAll("#nameInputs input");
@@ -66,6 +78,16 @@ function handleSecretLinkClick(event) {
     // Get the target unique link from the data-target attribute
     let targetLink = event.target.dataset.target;
 
-    // Display the Secret Santa recipient information
-    alert(`You are the Secret Santa for: ${targetLink}`);
+    // Extract player information from the link
+    let linkParts = targetLink.split('-');
+    let playerName = linkParts[0].replace(/%20/g, ' '); // Replace %20 with space
+    let phoneNumber = linkParts[1];
+
+    // Display the Secret Santa recipient information on the page
+    let recipientInfo = document.getElementById('recipientInfo');
+    recipientInfo.innerHTML = `You are the Secret Santa for: <strong>${playerName}</strong>`;
+
+    // Optionally, you can also redirect the user to a new page or show a modal with the information
+    // window.location.href = targetLink; // Uncomment this line to redirect to the link
 }
+
