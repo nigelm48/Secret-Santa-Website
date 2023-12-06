@@ -25,6 +25,27 @@ function collectNames() {
     nameInputsContainer.appendChild(submitButton);
 }
 
+// Include a UUID library, you can use a package like 'uuid' or generateUUID function
+// For simplicity, you can use a basic function as shown below
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+function generateUniqueLink(playerName, phoneNumber) {
+    // Generate a UUID as a unique identifier
+    let uniqueIdentifier = generateUUID();
+    // Concatenate the player's name, phone number, and the unique identifier to create a unique link
+    let relativePath = `${playerName.toLowerCase().replace(/\s/g, '-')}-${phoneNumber}-${uniqueIdentifier}`;
+    // Use the Netlify domain as the base URL
+    let netlifyDomain = 'https://gleeful-kulfi-bb3502.netlify.app/';
+    return `${netlifyDomain}${relativePath}`;
+}
+
+
 function submitNames() {
     let nameInputs = document.querySelectorAll("#nameInputs input");
     let names = Array.from(nameInputs).map(input => input.value);
@@ -35,21 +56,20 @@ function submitNames() {
     let nameInputsContainer = document.getElementById("nameInputs");
     nameInputsContainer.innerHTML = ""; // Clear the existing content
 
-    shuffledNames.forEach((name, index) => {
-        // Find a name other than the current one (excluding themselves)
-        let recipient = findRecipient(name, shuffledNames);
+    // Ensure that everyone has a Secret Santa
+    for (let i = 0; i < shuffledNames.length; i++) {
+        let name = shuffledNames[i];
+        let recipientIndex = (i + 1) % shuffledNames.length; // Ensure the recipient is within the bounds of the array
 
-        // Generate unique links for each player
-        let link = generateUniqueLink(name, recipient);
-
-        // Create a paragraph element to display the player's name, recipient, and link
+        // Create a paragraph element to display the player's name and link
         let playerInfo = document.createElement("p");
-        playerInfo.innerHTML = `<strong>${name}</strong> is the Secret Santa for: <strong>${recipient}</strong>. Link: <a href="${link}" target="_blank">${link}</a>`;
+        playerInfo.innerHTML = `<strong>${name}</strong> is the Secret Santa for: <strong>${shuffledNames[recipientIndex]}</strong>`;
 
         // Append the paragraph element to the container
         nameInputsContainer.appendChild(playerInfo);
-    });
+    }
 }
+
 
 function findRecipient(currentName, names) {
     // Filter out the current name
@@ -59,23 +79,6 @@ function findRecipient(currentName, names) {
     let recipient = potentialRecipients[Math.floor(Math.random() * potentialRecipients.length)];
 
     return recipient;
-}
-
-// Function to generate a unique link based on the player's name and recipient's name
-function generateUniqueLink(playerName, recipientName) {
-    let uniqueIdentifier = generateUUID();
-    let relativePath = `${playerName.toLowerCase().replace(/\s/g, '-')}-${recipientName.toLowerCase().replace(/\s/g, '-')}-${uniqueIdentifier}`;
-    let netlifyDomain = 'https://gleeful-kulfi-bb3502.netlify.app/';
-    return `${netlifyDomain}${relativePath}`;
-}
-
-// Function to generate a UUID (Universally Unique Identifier)
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0,
-            v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
 }
 
 // Function to shuffle an array (Fisher-Yates algorithm)
